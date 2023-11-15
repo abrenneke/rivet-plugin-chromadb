@@ -20,6 +20,9 @@ The Rivet Chroma Plugin is a plugin for [Rivet](https://rivet.ironcladapp.com) t
 - [Using the plugin](#using-the-plugin)
   - [In Rivet](#in-rivet)
   - [In the SDK](#in-the-sdk)
+- [Configuration](#configuration)
+  - [In Rivet](#in-rivet-1)
+  - [In the SDK](#in-the-sdk-1)
 - [Nodes](#nodes)
   - [Chroma Add](#chroma-add)
     - [Inputs](#inputs)
@@ -83,6 +86,29 @@ To use this plugin in Rivet:
    (You may also use your own node registry if you wish, instead of the global one.)
 
 3. The nodes will now work when ran with `runGraphInFile` or `createProcessor`.
+
+## Configuration
+
+### In Rivet
+
+By default, the plugin will attempt to connect to a database at `http://localhost:8000`. If you would like you change this, you can open the Settings window, navigate to the Plugins area, and you will see a `Database URI` setting. You can change this to the URI of your Chroma database.
+
+### In the SDK
+
+When using the SDK, you can pass a `databaseUri` option to the plugin to configure the database URI:
+
+Using `createProcessor` or `runGraphInFile`, pass in via `pluginSettings` in `RunGraphOptions`:
+
+```ts
+await createProcessor(project, {
+  ...etc,
+  pluginSettings: {
+    chroma: {
+      databaseUri: "http://localhost:8000",
+    },
+  },
+});
+```
 
 ## Nodes
 
