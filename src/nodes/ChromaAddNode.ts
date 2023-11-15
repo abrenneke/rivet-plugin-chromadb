@@ -137,6 +137,13 @@ export function chromaAddNode(rivet: typeof Rivet) {
           helperMessage: "If the collection does not exist, create it.",
         },
         {
+          type: "string",
+          dataKey: "id",
+          label: "ID",
+          useInputToggleDataKey: "useIdInput",
+          placeholder: "ID",
+        },
+        {
           type: "toggle",
           dataKey: "upsert",
           label: "Upsert",

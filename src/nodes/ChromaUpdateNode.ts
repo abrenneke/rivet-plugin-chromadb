@@ -130,6 +130,13 @@ export function chromaUpdateNode(rivet: typeof Rivet) {
           helperMessage: "If the collection does not exist, create it.",
         },
         {
+          type: "string",
+          label: "ID",
+          dataKey: "id",
+          useInputToggleDataKey: "useIdInput",
+          helperMessage: "The ID of the item to update.",
+        },
+        {
           type: "keyValuePair",
           label: "Metadata",
           dataKey: "metadata",

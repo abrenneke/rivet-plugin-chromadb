@@ -2176,6 +2176,13 @@ function chromaAddNode(rivet) {
           helperMessage: "If the collection does not exist, create it."
         },
         {
+          type: "string",
+          dataKey: "id",
+          label: "ID",
+          useInputToggleDataKey: "useIdInput",
+          placeholder: "ID"
+        },
+        {
           type: "toggle",
           dataKey: "upsert",
           label: "Upsert",
@@ -2374,6 +2381,13 @@ function chromaDeleteNode(rivet) {
           dataKey: "createCollectionIfNotExists",
           label: "Create Collection If Not Exists",
           helperMessage: "If the collection does not exist, create it."
+        },
+        {
+          type: "string",
+          dataKey: "id",
+          label: "ID",
+          useInputToggleDataKey: "useIdInput",
+          helperMessage: "The ID of the item to delete from the collection. Leave empty to use filters instead."
         },
         {
           type: "code",
@@ -3032,6 +3046,13 @@ function chromaUpdateNode(rivet) {
           dataKey: "createCollectionIfNotExists",
           label: "Create Collection If Not Exists",
           helperMessage: "If the collection does not exist, create it."
+        },
+        {
+          type: "string",
+          label: "ID",
+          dataKey: "id",
+          useInputToggleDataKey: "useIdInput",
+          helperMessage: "The ID of the item to update."
         },
         {
           type: "keyValuePair",

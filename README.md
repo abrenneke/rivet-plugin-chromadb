@@ -1,20 +1,58 @@
 <h1 align="center"><img src="https://rivet.ironcladapp.com/img/logo-banner-wide.png" alt="Rivet Logo"></h1>
 
-# Rivet Example Plugin
+<h1 align="center"><img src="https://docs.trychroma.com/img/chroma.svg" alt="Chroma Logo"></h1>
 
-This project is an example of a [Rivet](https://github.com/Ironclad/rivet) plugin. It is a minimal TypeScript Rivet plugin that adds a single node called Example Plugin Node.
+# Rivet Chroma Plugin
+
+The Rivet Chroma Plugin is a plugin for [Rivet](https://rivet.ironcladapp.com) to add functionality for the [Chroma](https://www.trychroma.com/) vector database. It adds the following nodes to Rivet:
+
+- Chroma Add
+- Chroma Delete
+- Chroma Get
+- Chroma Query
+- Chroma Update
+- Create Collection
+- Delete Collection
+- List Collections
+
+**Note: unless Chroma is configured to accept CORS from `tauri://localhost`, you must use the [Node Executor](https://rivet.ironcladapp.com/docs/user-guide/executors#node) with this plugin.**
 
 - [Using the plugin](#using-the-plugin)
   - [In Rivet](#in-rivet)
-  - [In Code](#in-code)
-- [Making your own plugin](#making-your-own-plugin)
-  - [⚠️ Important Notes ⚠️](#️-important-notes-️)
-  - [1. Plugin Definition](#1-plugin-definition)
-  - [2. Node Definitions](#2-node-definitions)
-  - [3. Bundling](#3-bundling)
-  - [4. Committing](#4-committing)
-  - [5. Serving your plugin](#5-serving-your-plugin)
-  - [Loading your plugin using the SDK](#loading-your-plugin-using-the-sdk)
+  - [In the SDK](#in-the-sdk)
+- [Nodes](#nodes)
+  - [Chroma Add](#chroma-add)
+    - [Inputs](#inputs)
+    - [Outputs](#outputs)
+    - [Editor Settings](#editor-settings)
+  - [Chroma Delete](#chroma-delete)
+    - [Inputs](#inputs-1)
+    - [Outputs](#outputs-1)
+    - [Editor Settings](#editor-settings-1)
+  - [Chroma Get](#chroma-get)
+    - [Inputs](#inputs-2)
+    - [Outputs](#outputs-2)
+    - [Editor Settings](#editor-settings-2)
+  - [Chroma Query](#chroma-query)
+    - [Inputs](#inputs-3)
+    - [Outputs](#outputs-3)
+    - [Editor Settings](#editor-settings-3)
+  - [Chroma Update](#chroma-update)
+    - [Inputs](#inputs-4)
+    - [Outputs](#outputs-4)
+    - [Editor Settings](#editor-settings-4)
+- [Create Collection](#create-collection)
+  - [Inputs](#inputs-5)
+  - [Outputs](#outputs-5)
+  - [Editor Settings](#editor-settings-5)
+  - [Delete Collection](#delete-collection)
+    - [Inputs](#inputs-6)
+    - [Outputs](#outputs-6)
+    - [Editor Settings](#editor-settings-6)
+  - [List Collections](#list-collections)
+    - [Inputs](#inputs-7)
+    - [Outputs](#outputs-7)
+    - [Editor Settings](#editor-settings-7)
 - [Local Development](#local-development)
 
 ## Using the plugin
@@ -23,95 +61,229 @@ This project is an example of a [Rivet](https://github.com/Ironclad/rivet) plugi
 
 To use this plugin in Rivet:
 
-1. Navigate to the Project tab in the left sidebar. You will see a + button next to `Plugins`,
-   click it to open the Add Plugin modal.
-2. In Add Remote Plugin, use this plugin's: [jsdelivr](https://www.jsdelivr.com/) URL:
+1. Open the plugins overlay at the top of the screen.
+2. Search for "rivet-plugin-chromadb"
+3. Click the "Install" button to install the plugin into your current project.
 
+### In the SDK
+
+1. Import the plugin and Rivet into your project:
+
+   ```ts
+   import * as Rivet from "@ironclad/rivet";
+   import RivetPluginChroma from "@ironclad/rivet-plugin-chromadb";
    ```
-   https://cdn.jsdelivr.net/gh/abrenneke/rivet-plugin-example@main/dist/bundle.js
+
+2. Initialize the plugin and register the nodes with the `globalRivetNodeRegistry`:
+
+   ```ts
+   Rivet.globalRivetNodeRegistry.registerPlugin(RivetPluginChroma(Rivet));
    ```
 
-3. The example plugin is now installed in your project. You can add the Example Plugin Node using the Add Node menu.
+   (You may also use your own node registry if you wish, instead of the global one.)
 
-### In Code
+3. The nodes will now work when ran with `runGraphInFile` or `createProcessor`.
 
-## Making your own plugin
+## Nodes
 
-### ⚠️ Important Notes ⚠️
+### Chroma Add
 
-- You must bundle your plugins, or include all code for your plugin in the ESM files. Plugins are loaded using `import(pluginUrl)` so must follow all rules for ESM modules. This means that you cannot use `require` or `module.exports` in your plugin code. If you need to use external libraries, you must bundle them.
+Add an item to a collection in Chroma. You must provide an embedding for the item, and optionally a document. The item must also have an ID - you can use the [RNG Node](https://rivet.ironcladapp.com/docs/node-reference/RNG) or [Hash Node](https://rivet.ironcladapp.com/docs/node-reference/hash) to generate random or deterministic IDs.
 
-- You also cannot import nor bundle `@ironclad/rivet-core` in your plugin. The rivet core library is passed into your default export function as an argument. Be careful to only use `import type` statements for the core library, otherwise your plugin will not bundle successfully.
+#### Inputs
 
-This repository has examples for both bundling with [ESBuild](https://esbuild.github.io/) and only importing types from `@ironclad/rivet-core`.
+| Title     | Data Type | Description                                                  | Default Value | Notes                                                                                                                                              |
+| --------- | --------- | ------------------------------------------------------------ | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Embedding | `vector`  | The embedding of the item to add to the collection in Chroma | (required)    | You can use the [Get Embedding Node](https://rivet.ironcladapp.com/docs/node-reference/get-embedding) to get vector embeddings to store in Chroma. |
+| Document  | `string`  | The document to associate with the embedding. Optional.      | (empty)       |                                                                                                                                                    |
 
-### 1. Plugin Definition
+Additional inputs available with toggles in the editor.
 
-Follow the example in [src/index.ts](src/index.ts) to define your plugin. Your plugin must default-export a function that takes in the Rivet Core library as its only argument, and returns a valid `RivetPlugin` object.
+#### Outputs
 
-### 2. Node Definitions
+| Title | Data Type | Description                         | Notes |
+| ----- | --------- | ----------------------------------- | ----- |
+| ID    | `string`  | The ID of the row stored in Chroma. |       |
 
-Follow the example in [src/nodes/ExamplePluginNode.ts](src/nodes/ExamplePluginNode.ts) to define your plugin's nodes. You should follow a simlar syntax of exporting functions that take in the Rivet Core library.
+#### Editor Settings
 
-- Nodes must implement `PluginNodeDefinition<T>` by calling `pluginNodeDefinition(yourPluginImpl, "Node Name")`.
-- Node implementations must implement `PluginNodeImpl<T>`.
-- `T` should be your plugin's type definition.
+| Setting                         | Description                                                                                                                                                                                                                                                               | Default Value  | Use Input Toggle   | Input Data Type |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ------------------ | --------------- |
+| Collection Name                 | The name of the collection to add the item into.                                                                                                                                                                                                                          | new-collection | Yes                | `string`        |
+| Create Collection If Not Exists | If the collection does not exist, create it.                                                                                                                                                                                                                              | true           | Yes                | `boolean`       |
+| ID                              | The ID of the item to add. If empty, a random ID will not be generated. You can use the [RNG Node](https://rivet.ironcladapp.com/docs/node-reference/RNG) or [Hash Node](https://rivet.ironcladapp.com/docs/node-reference/hash) to generate random or deterministic IDs. | (empty)        | Yes (default true) | `string`        |
+| Upsert                          | If the item already exists, update it instead of throwing an error.                                                                                                                                                                                                       | true           | Yes                | `boolean`       |
+| Metadata                        | Additional key/value pairs to store with the item.                                                                                                                                                                                                                        | (empty)        | Yes                | `object`        |
 
-### 3. Bundling
+### Chroma Delete
 
-See [bundle.ts](bundle.ts) for an example of how to bundle your plugin. You can use any bundler you like, but you must bundle your plugin into a single file. You can use the [ESBuild](https://esbuild.github.io/) bundler to bundle your plugin into a single file.
+Delete an item from a collection in Chroma.
 
-It is important that all external libraries are bundled, because browsers cannot load bare imports.
+#### Inputs
 
-### 4. Committing
+See Editor Settings, all inputs are toggleable.
 
-You should commit your bundled files to your repository, or provide your plugin on NPM.
+#### Outputs
 
-### 5. Serving your plugin
+| Title | Data Type  | Description                                                 | Notes |
+| ----- | ---------- | ----------------------------------------------------------- | ----- |
+| IDs   | `string[]` | The IDs of the items that were deleted from the collection. |       |
 
-You should use a CDN to serve your plugin. You can use [jsdelivr](https://www.jsdelivr.com/) to serve your plugin. You can use the following URL to serve your plugin (assuming you have bundled to `dist/bundle.js`):
+#### Editor Settings
 
-```
-https://cdn.jsdelivr.net/gh/<your-github-username>/<your-repo-name>@<your-branch-name>/dist/bundle.js
-```
+| Setting                         | Description                                                                                                                                                     | Default Value  | Use Input Toggle   | Input Data Type |
+| ------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ------------------ | --------------- |
+| Collection Name                 | The name of the collection to delete the item from.                                                                                                             | new-collection | Yes                | `string`        |
+| Create Collection If Not Exists | If the collection does not exist, create it.                                                                                                                    | true           | Yes                | `boolean`       |
+| ID                              | The ID of the item to delete. If empty, then Where filters will be used instead.                                                                                | (empty)        | Yes (default true) | `string`        |
+| Where                           | A JSON object representing [Where filters](https://docs.trychroma.com/usage-guide#using-where-filters) to use to find the items to delete.                      | (empty)        | Yes                | `object`        |
+| Where Document                  | A JSON object representing a [Where document filter](https://docs.trychroma.com/usage-guide#filtering-by-document-contents) to use to find the items to delete. | (empty)        | Yes                | `object`        |
 
-If you have published your plugin on NPM, you can use the following URL:
+### Chroma Get
 
-```
-https://cdn.jsdelivr.net/npm/<your-package-name>/dist/bundle.js
-```
+Retrieves (not queries) one or more items from a collection in Chroma. If you are searching, use the Chroma Query node instead.
 
-### Loading your plugin using the SDK
+#### Inputs
 
-First make sure your plugin is available on NPM or another method so it can be `import`ed.
+See Editor Settings, all inputs are toggleable.
 
-Load your plugin and Rivet into your application:
+#### Outputs
 
-```ts
-import * as Rivet from "@ironclad/rivet-core";
-import yourPlugin from "<your-package-name>";
-```
+| Title | Data Type  | Description                                            | Notes |
+| ----- | ---------- | ------------------------------------------------------ | ----- |
+| IDs   | `string[]` | The IDs of the items that were retrieved from Chroma.  |       |
+| Items | `object[]` | The full item objects that were retrieved from Chroma. |       |
 
-Register your plugin with Rivet be using the `globalRivetNodeRegistry` or creating a new `NodeRegistration` and registering with that:
+#### Editor Settings
 
-```ts
-Rivet.globalRivetNodeRegistry.registerPlugin(yourPlugin(Rivet));
-```
+| Setting                         | Description                                                                                                                                                       | Default Value  | Use Input Toggle   | Input Data Type |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ------------------ | --------------- |
+| Collection Name                 | The name of the collection to retrieve the item from.                                                                                                             | new-collection | Yes                | `string`        |
+| Create Collection If Not Exists | If the collection does not exist, create it.                                                                                                                      | true           | Yes                | `boolean`       |
+| Limit                           | The maximum number of items to retrieve.                                                                                                                          | 10             | Yes                | `number`        |
+| Offset                          | The number of items to skip before retrieving.                                                                                                                    | 0              | Yes                | `number`        |
+| IDs                             | The IDs of the items to retrieve. If empty, then Where filters will be used instead.                                                                              | (empty)        | Yes (default true) | `string[]`      |
+| Where                           | A JSON object representing [Where filters](https://docs.trychroma.com/usage-guide#using-where-filters) to use to find the items to retrieve.                      | (empty)        | Yes                | `object`        |
+| Where Document                  | A JSON object representing a [Where document filter](https://docs.trychroma.com/usage-guide#filtering-by-document-contents) to use to find the items to retrieve. | (empty)        | Yes                | `object`        |
+
+### Chroma Query
+
+Queries one or more items from a collection in Chroma using an embedding to find the nearest neighbors. If you are retrieving a specific item, use the Chroma Get node instead.
+
+#### Inputs
+
+| Title     | Data Type | Description                                         | Default Value | Notes                                                                                                                                              |
+| --------- | --------- | --------------------------------------------------- | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Embedding | `vector`  | The embedding to use to find the nearest neighbors. | (required)    | You can use the [Get Embedding Node](https://rivet.ironcladapp.com/docs/node-reference/get-embedding) to get vector embeddings to store in Chroma. |
+
+Additional inputs available with toggles in the editor.
+
+#### Outputs
+
+| Title | Data Type  | Description                                                                                                     | Notes |
+| ----- | ---------- | --------------------------------------------------------------------------------------------------------------- | ----- |
+| IDs   | `string[]` | The IDs of the items that were retrieved from Chroma.                                                           |       |
+| Items | `object[]` | The full item objects that were retrieved from Chroma. Includes the distances each item has from the embedding. |       |
+
+#### Editor Settings
+
+| Setting                         | Description                                                                                                                                                       | Default Value  | Use Input Toggle | Input Data Type |
+| ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- | ---------------- | --------------- |
+| Collection Name                 | The name of the collection to query the item from.                                                                                                                | new-collection | Yes              | `string`        |
+| Create Collection If Not Exists | If the collection does not exist, create it.                                                                                                                      | true           | Yes              | `boolean`       |
+| Num Results                     | The maximum number of items to retrieve.                                                                                                                          | 10             | Yes              | `number`        |
+| Where                           | A JSON object representing [Where filters](https://docs.trychroma.com/usage-guide#using-where-filters) to use to find the items to retrieve.                      | (empty)        | Yes              | `object`        |
+| Where Document                  | A JSON object representing a [Where document filter](https://docs.trychroma.com/usage-guide#filtering-by-document-contents) to use to find the items to retrieve. | (empty)        | Yes              | `object`        |
+
+### Chroma Update
+
+Updates an existing item in a collection in Chroma.
+
+#### Inputs
+
+| Title     | Data Type | Description                                                              | Default Value | Notes                                                                                                                                              |
+| --------- | --------- | ------------------------------------------------------------------------ | ------------- | -------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Embedding | `vector`  | The embedding to set for the item to update in the collection in Chroma. | (required)    | You can use the [Get Embedding Node](https://rivet.ironcladapp.com/docs/node-reference/get-embedding) to get vector embeddings to store in Chroma. |
+
+Additional inputs available with toggles in the editor.
+
+#### Outputs
+
+| Title | Data Type | Description                                    | Notes |
+| ----- | --------- | ---------------------------------------------- | ----- |
+| ID    | `string`  | The ID of the item that was updated in Chroma. |       |
+
+#### Editor Settings
+
+| Setting                         | Description                                        | Default Value  | Use Input Toggle   | Input Data Type |
+| ------------------------------- | -------------------------------------------------- | -------------- | ------------------ | --------------- |
+| Collection Name                 | The name of the collection to update the item in.  | new-collection | Yes                | `string`        |
+| Create Collection If Not Exists | If the collection does not exist, create it.       | true           | Yes                | `boolean`       |
+| ID                              | The ID of the item to update.                      | (empty)        | Yes (default true) | `string`        |
+| Metadata                        | Additional key/value pairs to store with the item. | (empty)        | Yes                | `object`        |
+
+## Create Collection
+
+Creates a collection in Chroma.
+
+#### Inputs
+
+See Editor Settings, all inputs are toggleable.
+
+#### Outputs
+
+| Title           | Data Type | Description                                  | Notes |
+| --------------- | --------- | -------------------------------------------- | ----- |
+| Collection Name | `string`  | The name of the collection that was created. |       |
+
+#### Editor Settings
+
+| Setting          | Description                                              | Default Value  | Use Input Toggle | Input Data Type |
+| ---------------- | -------------------------------------------------------- | -------------- | ---------------- | --------------- |
+| Collection Name  | The name of the collection to create.                    | new-collection | Yes              | `string`        |
+| Ignore If Exists | If the collection already exists, do not throw an error. | true           | Yes              | `boolean`       |
+| Metadata         | Additional key/value pairs to store with the collection. | (empty)        | Yes              | `object`        |
+
+### Delete Collection
+
+Deletes a collection in Chroma.
+
+#### Inputs
+
+See Editor Settings, all inputs are toggleable.
+
+#### Outputs
+
+| Title           | Data Type | Description                                  | Notes |
+| --------------- | --------- | -------------------------------------------- | ----- |
+| Collection Name | `string`  | The name of the collection that was deleted. |       |
+
+#### Editor Settings
+
+| Setting         | Description                           | Default Value  | Use Input Toggle | Input Data Type |
+| --------------- | ------------------------------------- | -------------- | ---------------- | --------------- |
+| Collection Name | The name of the collection to delete. | new-collection | Yes              | `string`        |
+
+### List Collections
+
+Lists all collections in Chroma.
+
+#### Inputs
+
+This node has no inputs.
+
+#### Outputs
+
+| Title            | Data Type  | Description                             | Notes |
+| ---------------- | ---------- | --------------------------------------- | ----- |
+| Collection Names | `string[]` | The names of the collections in Chroma. |       |
+| Collections      | `object[]` | The full collection objects in Chroma.  |       |
+
+#### Editor Settings
+
+This node has no editor settings.
 
 ## Local Development
 
-For local development using this example, run `yarn dev` - this will:
-
-- Watch your TypeScript files with `tsc` and report any type errors
-- Watch your TypeScript files with `esbuild` and bundle them into `dist/bundle.js`
-- Serve the `dist` folder using `serve` on port 3000.
-
-You can then add your plugin to Rivet using the following URL:
-
-```
-http://localhost:3000/bundle.js
-```
-
-To refresh your changes in Rivet, reload the page by right clicking on any of the tabs at the top and selecting "Reload".
-
-![Reload in Rivet](./reload-in-rivet-example.png)
+1. Run `yarn dev` to start the compiler and bundler in watch mode. This will automatically recombine and rebundle your changes into the `dist` folder. This will also copy the bundled files into the plugin install directory.
+2. After each change, you must restart Rivet to see the changes.

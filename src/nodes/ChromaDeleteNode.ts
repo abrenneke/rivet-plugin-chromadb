@@ -158,6 +158,14 @@ export function chromaDeleteNode(rivet: typeof Rivet) {
           helperMessage: "If the collection does not exist, create it.",
         },
         {
+          type: "string",
+          dataKey: "id",
+          label: "ID",
+          useInputToggleDataKey: "useIdInput",
+          helperMessage:
+            "The ID of the item to delete from the collection. Leave empty to use filters instead.",
+        },
+        {
           type: "code",
           dataKey: "where",
           label: "Where",
