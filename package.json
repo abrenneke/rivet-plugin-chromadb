@@ -1,9 +1,12 @@
 {
   "name": "rivet-plugin-chromadb",
   "packageManager": "yarn@3.5.0",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "main": "dist/bundle.js",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "tsc -b && tsx bundle.ts",
     "dev": "run-p watch:tsc watch:esbuild:sync",
