@@ -12,7 +12,8 @@
     "dev": "run-p watch:tsc watch:esbuild:sync",
     "watch:tsc": "tsc -b -w --preserveWatchOutput",
     "watch:esbuild": "tsx bundle.ts --watch",
-    "watch:esbuild:sync": "tsx bundle.ts --watch --sync"
+    "watch:esbuild:sync": "tsx bundle.ts --watch --sync",
+    "publish": "yarn npm publish --access public"
   },
   "dependencies": {
     "@ironclad/rivet-core": "^1.13.0",
