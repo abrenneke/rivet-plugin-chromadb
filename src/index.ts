@@ -19,6 +19,8 @@ const plugin: RivetPluginInitializer = (rivet) => {
         label: "Database URI",
         description:
           "The URI of the database to use. Defaults to http://localhost:8000.",
+        helperText:
+          "The URI of the database to use. Defaults to http://localhost:8000.",
         pullEnvironmentVariable: "CHROMA_DB_URI",
       },
     },
