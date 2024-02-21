@@ -77,7 +77,6 @@ export function chromaUpdateNode(rivet: typeof Rivet) {
         dataType: "vector",
         title: "Embedding",
         description: "The embedding for the item to store in the collection.",
-        required: true,
       });
 
       if (data.useMetadataInput) {
@@ -187,7 +186,7 @@ export function chromaUpdateNode(rivet: typeof Rivet) {
         inputData,
         "collectionName"
       );
-      const embedding = rivet.coerceType(
+      const embedding = rivet.coerceTypeOptional(
         inputData["embedding" as PortId],
         "vector"
       );
@@ -204,7 +203,7 @@ export function chromaUpdateNode(rivet: typeof Rivet) {
 
       await collection.update({
         ids: [id],
-        embeddings: [embedding],
+        embeddings: embedding ? [embedding] : [[]], // do not auto generation embedding
         metadatas: metadata ? [metadata] : undefined,
       });
 

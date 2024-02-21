@@ -210,11 +210,11 @@ export function chromaAddNode(rivet: typeof Rivet) {
           });
 
       const id = rivet.getInputOrData(data, inputData, "id");
-      const document = rivet.coerceType(
+      const document = rivet.coerceTypeOptional(
         inputData["document" as PortId],
         "string"
       );
-      const embedding = rivet.coerceType(
+      const embedding = rivet.coerceTypeOptional(
         inputData["embedding" as PortId],
         "vector"
       );
@@ -222,14 +222,14 @@ export function chromaAddNode(rivet: typeof Rivet) {
       if (data.upsert) {
         await collection.upsert({
           ids: [id],
-          embeddings: [embedding],
+          embeddings: embedding ? [embedding] : [[]], // do no auto generate embedding
           documents: document ? [document] : undefined,
           metadatas: metadata ? [metadata] : undefined,
         });
       } else {
         await collection.add({
           ids: [id],
-          embeddings: [embedding],
+          embeddings: embedding ? [embedding] : [[]], // do no auto generate embedding
           documents: document ? [document] : undefined,
           metadatas: metadata ? [metadata] : undefined,
         });

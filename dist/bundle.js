@@ -2238,25 +2238,27 @@ function chromaAddNode(rivet) {
         name: collectionName
       });
       const id = rivet.getInputOrData(data, inputData, "id");
-      const document = rivet.coerceType(
+      const document = rivet.coerceTypeOptional(
         inputData["document"],
         "string"
       );
-      const embedding = rivet.coerceType(
+      const embedding = rivet.coerceTypeOptional(
         inputData["embedding"],
         "vector"
       );
       if (data.upsert) {
         await collection.upsert({
           ids: [id],
-          embeddings: [embedding],
+          embeddings: embedding ? [embedding] : [[]],
+          // do no auto generate embedding
           documents: document ? [document] : void 0,
           metadatas: metadata ? [metadata] : void 0
         });
       } else {
         await collection.add({
           ids: [id],
-          embeddings: [embedding],
+          embeddings: embedding ? [embedding] : [[]],
+          // do no auto generate embedding
           documents: document ? [document] : void 0,
           metadatas: metadata ? [metadata] : void 0
         });
@@ -3002,8 +3004,7 @@ function chromaUpdateNode(rivet) {
         id: "embedding",
         dataType: "vector",
         title: "Embedding",
-        description: "The embedding for the item to store in the collection.",
-        required: true
+        description: "The embedding for the item to store in the collection."
       });
       if (data.useMetadataInput) {
         inputs.push({
@@ -3098,7 +3099,7 @@ function chromaUpdateNode(rivet) {
         inputData,
         "collectionName"
       );
-      const embedding = rivet.coerceType(
+      const embedding = rivet.coerceTypeOptional(
         inputData["embedding"],
         "vector"
       );
@@ -3110,7 +3111,8 @@ function chromaUpdateNode(rivet) {
       const id = rivet.getInputOrData(data, inputData, "id");
       await collection.update({
         ids: [id],
-        embeddings: [embedding],
+        embeddings: embedding ? [embedding] : [[]],
+        // do not auto generation embedding
         metadatas: metadata ? [metadata] : void 0
       });
       return {
@@ -3438,6 +3440,7 @@ var plugin = (rivet) => {
         type: "string",
         label: "Database URI",
         description: "The URI of the database to use. Defaults to http://localhost:8000.",
+        helperText: "The URI of the database to use. Defaults to http://localhost:8000.",
         pullEnvironmentVariable: "CHROMA_DB_URI"
       }
     },
