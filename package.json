@@ -1,7 +1,7 @@
 {
   "name": "rivet-plugin-chromadb",
   "packageManager": "yarn@3.5.0",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "type": "module",
   "main": "dist/bundle.js",
   "files": [
