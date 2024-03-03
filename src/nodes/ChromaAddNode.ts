@@ -210,26 +210,31 @@ export function chromaAddNode(rivet: typeof Rivet) {
           });
 
       const id = rivet.getInputOrData(data, inputData, "id");
-      const document = rivet.coerceType(
+      const document = rivet.coerceTypeOptional(
         inputData["document" as PortId],
         "string"
       );
-      const embedding = rivet.coerceType(
+      let embedding = rivet.coerceTypeOptional(
         inputData["embedding" as PortId],
         "vector"
       );
 
+      // Chroma rejects empty embeddings, so just use an empty array.
+      if (!embedding) {
+        embedding = [];
+      }
+
       if (data.upsert) {
         await collection.upsert({
           ids: [id],
-          embeddings: [embedding],
+          embeddings: embedding,
           documents: document ? [document] : undefined,
           metadatas: metadata ? [metadata] : undefined,
         });
       } else {
         await collection.add({
           ids: [id],
-          embeddings: [embedding],
+          embeddings: embedding,
           documents: document ? [document] : undefined,
           metadatas: metadata ? [metadata] : undefined,
         });

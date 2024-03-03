@@ -17,7 +17,7 @@
   },
   "dependencies": {
     "@ironclad/rivet-core": "^1.13.0",
-    "chromadb": "^1.6.1"
+    "chromadb": "^1.8.1"
   },
   "devDependencies": {
     "esbuild": "^0.19.2",

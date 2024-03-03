@@ -88,7 +88,7 @@ const options = {
   outfile: "dist/bundle.js",
   format: "esm",
   logLevel: "info",
-  plugins: [stubModulePlugin("isomorphic-fetch")],
+  plugins: [stubModulePlugin("isomorphic-fetch"), stubModulePlugin("cohere-ai")],
 } satisfies esbuild.BuildOptions;
 
 if (process.argv.includes("--sync")) {
